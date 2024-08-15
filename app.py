@@ -1,4 +1,9 @@
-from flask import Flask, render_template
+### Other imports ###
+from string import ascii_letters, digits
+from random import choices
+
+### Flask imports ###
+from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 
@@ -13,9 +18,19 @@ class UrlShortener(db.Model):
     shortened_link = db.Column(db.Text)
 
 ### Routing ###
-@app.route("/")
-def home():
-    return render_template("index.html")
+@app.route("/", methods=["GET", "POST"])
+def index():
+    if request.method == 'POST':
+        #collecting input-url
+        input_url =  request.form.get("input-url")
+
+        # generating random str with limit of 6
+        random_str = ''.join(choices(ascii_letters+digits, k=6)) #max 32
+        print(random_str)
+
+        return render_template("index.html")
+    else:
+        return render_template("index.html")
 
 ### Activation ###
 if __name__ == "__main__":
