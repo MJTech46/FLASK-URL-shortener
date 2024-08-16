@@ -16,13 +16,17 @@
     <div class="d-flex flex-column justify-content-center align-items-center vh-100 col8">
         <form action="" method="post">
             <h1 class="text-center">Flask URL Shortener</h1>
-            <div class="d-flex flex-wrap justify-content-center align-items-center gap-2">
-                <input type="text" name="input-url" id="input-url" placeholder="https://" class="col form-control form-control-lg" required>
-                <button type="submit" class="btn btn-lg btn-primary rounded-3">Short it</button>
+            <div class="mt-5 d-flex flex-wrap justify-content-center align-items-center gap-2">
+                <input type="text" name="input-url" id="input-url" placeholder="https://" class="col form-control form-control-lg" {% if input_url %} value="{{ input_url }}" style="cursor: not-allowed;" disabled {% endif %} required>
+                <button type="submit" class="btn btn-lg btn-primary rounded-3" {% if input_url %} style="cursor: not-allowed;" disabled {% endif %}>Short it</button>
             </div>
-            <p class="mt-2 text-secondary text-center "><span class="text-white-50">Flask URL Shortener</span> is a free tool to shorten URLs and generate short links. <span class="text-white-50">Flask URL Shortener</span> allows to create a shortened link making it easy to share.</p>
+            <p class="mt-3 text-secondary text-center "><span class="text-white-50">Flask URL Shortener</span> is a free tool to shorten URLs and generate short links. <span class="text-white-50">Flask URL Shortener</span> allows to create a shortened link making it easy to share.</p>
         </form>
-        <div class="mt-5 d-flex justify-content-center align-items-center"><h4>https://sho.rt/6e6u78</h4></div>
+        {% if output_url %}
+        <div class="mt-5 d-flex justify-content-center align-items-center p-4 rounded rounded-3" style="background-color: #4e4f50">
+            <h4 class="p-0 m-0">http://localhost/{{ output_url }}</h4>
+        </div>
+        {% endif %}     
     </div>
 
     <!-- bootstrap js cdn -->

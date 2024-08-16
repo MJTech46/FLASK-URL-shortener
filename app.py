@@ -26,12 +26,14 @@ def index():
 
         # generating random str with limit of 6
         random_str = ''.join(choices(ascii_letters+digits, k=6)) #max 32
-        print(random_str)
 
-        return render_template("index.html")
+        #creating context
+        context = {"input_url":input_url, "output_url": random_str}
+
+        return render_template("index.html", **context)
     else:
         return render_template("index.html")
 
 ### Activation ###
 if __name__ == "__main__":
-    app.run()
+    app.run(port=80)
