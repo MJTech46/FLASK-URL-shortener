@@ -1,6 +1,7 @@
 ### Other imports ###
 from string import ascii_letters, digits
 from random import choices
+import json
 
 ### Flask imports ###
 from flask import Flask, render_template, request, redirect
@@ -57,7 +58,29 @@ def link_redirect(shortened_link):
         return redirect("/")
     else:
         return redirect(obj.original_link)
+    
+@app.route("/reroll/", methods=["POST"])
+def reroll():
+    #collecting the requested short link
+    old_short_link = request.get_json(force=True)["shortLink"]
+
+    # generating new random str with limit of 6
+    random_str = ''.join(choices(ascii_letters+digits, k=6)) #max 32
+
+    # collecting obj of old_short_link
+    obj = UrlShortener.query.filter_by(shortened_link = old_short_link).first()
+
+    # updating it's shortened_link field
+    obj.shortened_link = random_str
+    db.session.commit()
+
+    # creating the json structure in python
+    json_dict = {
+        "newShortLink":random_str
+    }
+
+    return json.dumps(json_dict)
 
 ### Activation ###
 if __name__ == "__main__":
-    app.run(port=80)
+    app.run(debug=True, host="0.0.0.0", port=80)
