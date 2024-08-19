@@ -8,6 +8,8 @@ from flask import Flask, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 
+
+
 ### Database ###
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///sqlite.db"
 db = SQLAlchemy(app)
@@ -20,6 +22,28 @@ class UrlShortener(db.Model):
 
     def __repr__(self):
         return f"<UrlShortener {self.shortened_link}>"
+    
+
+
+
+### utility functions ###
+def generate_random_str(length: int = 6) -> str:
+    #simple do-while using python
+    while True:
+        '''  Code to be executed at least once '''
+        #generating a new string 
+        random_str = ''.join(choices(ascii_letters+digits, k=length))
+        #checking if it already in the db
+        obj = UrlShortener.query.filter_by(shortened_link=random_str).first()
+
+        ''' Condition to continue or exit the loop '''
+        if not obj:
+            break
+    #returning the new str
+    return random_str
+
+
+
 
 ### Routing ###
 @app.route("/", methods=["GET", "POST"])
@@ -29,7 +53,7 @@ def index():
         input_url =  request.form.get("input-url")
 
         # generating random str with limit of 6
-        random_str = ''.join(choices(ascii_letters+digits, k=6)) #max 32
+        random_str = generate_random_str(length=6) #max 62
 
         ## save data in db ##
         obj = UrlShortener.query.filter_by(original_link=input_url).first()
@@ -59,13 +83,14 @@ def link_redirect(shortened_link):
     else:
         return redirect(obj.original_link)
     
+
 @app.route("/reroll/", methods=["POST"])
 def reroll():
     #collecting the requested short link
     old_short_link = request.get_json(force=True)["shortLink"]
 
     # generating new random str with limit of 6
-    random_str = ''.join(choices(ascii_letters+digits, k=6)) #max 32
+    random_str = generate_random_str(length=6) #max 62
 
     # collecting obj of old_short_link
     obj = UrlShortener.query.filter_by(shortened_link = old_short_link).first()
@@ -80,6 +105,10 @@ def reroll():
     }
 
     return json.dumps(json_dict)
+
+
+
+
 
 ### Activation ###
 if __name__ == "__main__":
