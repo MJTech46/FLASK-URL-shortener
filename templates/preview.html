@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Preview{% endblock title %}
+
+{% block body %}
+    <nav class="d-flex flex-column justify-content-center align-items-center" style="background-color: #152d42;">
+        <h1>Flask URLShortener</h1>
+        <h3>Preview</h3>
+    </nav>
+
+    <div class="container-fluid row mt-5">
+        <!-- statistics div -->
+        <div class="col-12 col-lg-5 d-flex flex-column justify-content-center align-items-center gap-5" style="color: #263849;">
+            <!-- total visits -->
+            <div class="p-3 border border-3 border-white bg-white d-flex flex-column justify-content-center align-items-center" style="height: 100px; width: 200px;">
+                <h2>{{ total_visits }}</h2>
+                <h5>Total Visits</h5>
+            </div>
+            <!-- created date -->
+            <div class="p-3 border border-3 border-white bg-white d-flex flex-column justify-content-center align-items-center" style="height: 100px; width: 200px;">
+                <h4>{{ created_date }}</h4>
+                <h5>Created Date</h5>
+            </div>
+        </div>
+        <!-- link info div -->
+        <div class="mt-5 col d-flex flex-column justify-content-lg-center gap-5">
+            <!-- current site  -->
+            <div class="d-flex flex-column text-white">
+                <h2 class="text-start">Current link:</h2>
+                <h4><a href="/{{ shortened_link }}"><span id="protocolHostPort">https://jsWillReplaceThis/</span>{{ shortened_link }}</a></h4>
+            </div>
+            <!-- redirecting site  -->
+            <div class="d-flex flex-column text-white">
+                <h2 class="text-start">Redirecting link:</h2>
+                <h4 class="text-break"><a href="{{ original_link }}">{{ original_link }}</a></h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5 mb-3 d-flex flex-column justify-content-center align-items-center">
+        <a class="btn btn-primary rounded-3 ps-3 pe-3 fw-bold" href="/">
+            <img src="/static/images/url.png" alt="reroll" style="width: 32px; height: 32px;"> Short new link
+        </a>
+    </div>
+{% endblock body %}
+    

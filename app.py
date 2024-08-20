@@ -1,6 +1,7 @@
 ### Other imports ###
 from string import ascii_letters, digits
 from random import choices
+from datetime import datetime, timezone
 import json
 
 ### Flask imports ###
@@ -17,8 +18,10 @@ db = SQLAlchemy(app)
 # DB models #
 class UrlShortener(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    original_link = db.Column(db.Text)
-    shortened_link = db.Column(db.Text)
+    original_link = db.Column(db.Text, nullable=False)
+    shortened_link = db.Column(db.Text, nullable=False)
+    created_date = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc))
+    total_visits = db.Column(db.Integer, nullable=False, default=0)
 
     def __repr__(self):
         return f"<UrlShortener {self.shortened_link}>"
@@ -60,13 +63,25 @@ def index():
         # if exist
         if obj:
             random_str = obj.shortened_link
+            # for context making
+            reroll = False
         else:
-            obj = UrlShortener(original_link=input_url, shortened_link=random_str)
+            obj = UrlShortener(
+                original_link=input_url, 
+                shortened_link=random_str, 
+                created_date=datetime.now(timezone.utc)
+            )
             db.session.add(obj)
             db.session.commit()
+            # for context making
+            reroll = True
         
         # creating context
-        context = {"input_url":input_url, "output_url": random_str}
+        context = {
+            "input_url":input_url, 
+            "output_url": random_str,
+            "reroll":reroll
+        }
 
         return render_template("index.html", **context)
     else:
@@ -75,12 +90,21 @@ def index():
 
 @app.route("/<shortened_link>", methods=["GET"])
 def link_redirect(shortened_link):
+    # if it is a preview (http://localhost/Ye0G6h+)
+    if shortened_link[-1] == "+":
+        return redirect(f"/preview/{shortened_link[:-1]}")
+
     # collecting data from db
     obj = UrlShortener.query.filter_by(shortened_link=shortened_link).first()
     
     if obj is None:
         return redirect("/")
     else:
+        # incrementing the visits for each successful visit
+        obj.total_visits = obj.total_visits + 1
+        db.session.add(obj)
+        db.session.commit()
+        
         return redirect(obj.original_link)
     
 
@@ -106,7 +130,20 @@ def reroll():
 
     return json.dumps(json_dict)
 
+@app.route("/preview/<shortened_link>", methods=["GET"])
+def preview(shortened_link):
+    # collecting obj from db
+    obj = UrlShortener.query.filter_by(shortened_link=shortened_link).first()
 
+    #creating context
+    context = {
+        "original_link":obj.original_link,
+        "shortened_link":obj.shortened_link,
+        "created_date":obj.created_date.strftime("%d-%b-%Y"),
+        "total_visits":obj.total_visits
+    }
+
+    return render_template("preview.html", **context)
 
 
 
