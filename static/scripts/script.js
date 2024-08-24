@@ -26,6 +26,10 @@ function rerollPost() {
     }
     
     xhr.open("POST", "/reroll/", true);
+
+    // Set the request header to indicate the content type as JSON
+    xhr.setRequestHeader("Content-Type", "application/json");
+
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             const newShortLink = JSON.parse(xhr.responseText)["newShortLink"];
