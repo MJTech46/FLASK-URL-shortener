@@ -72,20 +72,12 @@ This is a URL Shortener application built using the Flask framework in Python. I
     pip install -r requirements.txt
     ```
 
-4. **Create the tables:**
-    ```bash
-    flask shell
-    >>> from app import db
-    >>> db.create_all()
-    >>> exit()
-    ```
-
-5. **Run the application:**
+4. **Run the application:**
     ```bash
     python3 app.py  # On Windows use `python app.py`
     ```
 
-6. **Access the application:**
+5. **Access the application:**
     Open a web browser and go to `http://localhost/`.
 
 

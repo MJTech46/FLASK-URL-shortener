@@ -13,6 +13,8 @@ app = Flask(__name__)
 
 ### Database ###
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///sqlite.db"
+# For less memory utilization
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 # DB models #
@@ -149,4 +151,8 @@ def preview(shortened_link):
 
 ### Activation ###
 if __name__ == "__main__":
+    # To ensure tables are created (will create only ones)
+    with app.app_context():
+        db.create_all()
+    # Main loop / Starting point
     app.run(debug=True, host="0.0.0.0", port=80)
